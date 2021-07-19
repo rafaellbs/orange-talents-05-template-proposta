@@ -1,6 +1,6 @@
 package br.com.zupacademy.rafael.proposta.monitoramento;
 
-import br.com.zupacademy.rafael.proposta.analiseproposta.PropostaAnaliseClient;
+import br.com.zupacademy.rafael.proposta.analiseproposta.ServicoAnaliseProposta;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
@@ -15,7 +15,7 @@ import java.util.Map;
 public class SolicitacaoDeAnaliseHealthIndicator implements HealthIndicator {
 
     @Autowired
-    private PropostaAnaliseClient propostaAnaliseClient;
+    private ServicoAnaliseProposta servicoAnaliseProposta;
 
     @Override
     public Health health() {
@@ -24,7 +24,7 @@ public class SolicitacaoDeAnaliseHealthIndicator implements HealthIndicator {
         details.put("URL", "http://localhost:9999/api/solicitacao");
 
         try {
-            propostaAnaliseClient.verificaStatus();
+            servicoAnaliseProposta.verificaStatus();
             return Health.up().withDetails(details).build();
         } catch (FeignException e) {
             if (e.status() != -1) {

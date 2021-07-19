@@ -1,15 +1,26 @@
 package br.com.zupacademy.rafael.proposta.analiseproposta;
 
-public class SolicitacaoResponse {
+import javax.validation.constraints.NotBlank;
+
+public class ResultadoAnalisePropostaDTO {
+
+    @NotBlank
     private String documento;
+
+    @NotBlank
     private String nome;
+
+    @NotBlank
     private String resultadoSolicitacao;
+
+    @NotBlank
     private String idProposta;
 
     @Deprecated
-    public SolicitacaoResponse() {}
+    public ResultadoAnalisePropostaDTO() {}
 
-    public SolicitacaoResponse(String documento, String nome, String resultadoSolicitacao, String idProposta) {
+    public ResultadoAnalisePropostaDTO(@NotBlank String documento, @NotBlank String nome,
+                                       @NotBlank String resultadoSolicitacao, @NotBlank String idProposta) {
         this.documento = documento;
         this.nome = nome;
         this.resultadoSolicitacao = resultadoSolicitacao;

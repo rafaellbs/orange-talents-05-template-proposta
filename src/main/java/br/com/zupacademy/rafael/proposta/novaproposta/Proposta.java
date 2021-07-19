@@ -1,5 +1,6 @@
 package br.com.zupacademy.rafael.proposta.novaproposta;
 
+import br.com.zupacademy.rafael.proposta.criarcartao.Cartao;
 import br.com.zupacademy.rafael.proposta.validacao.ValidarCPFeCNPJ;
 
 import javax.persistence.*;
@@ -35,6 +36,9 @@ public class Proposta {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @OneToOne(cascade = CascadeType.MERGE)
+    private Cartao cartao;
+
     @Deprecated
     public Proposta() {
     };
@@ -60,8 +64,12 @@ public class Proposta {
         return nome;
     }
 
-    public void setStatus(Status status) {
+    public void situacao(Status status) {
         this.status = status;
+    }
+
+    public void adquire(Cartao cartao) {
+        this.cartao = cartao;
     }
 
     @Override

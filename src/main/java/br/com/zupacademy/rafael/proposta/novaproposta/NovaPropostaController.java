@@ -1,8 +1,11 @@
 package br.com.zupacademy.rafael.proposta.novaproposta;
 
-import br.com.zupacademy.rafael.proposta.analiseproposta.AnalisePropostaRequest;
-import br.com.zupacademy.rafael.proposta.analiseproposta.PropostaAnaliseClient;
-import br.com.zupacademy.rafael.proposta.analiseproposta.SolicitacaoResponse;
+import br.com.zupacademy.rafael.proposta.analiseproposta.AnalisePropostaDTO;
+import br.com.zupacademy.rafael.proposta.analiseproposta.ServicoAnaliseProposta;
+import br.com.zupacademy.rafael.proposta.analiseproposta.ResultadoAnalisePropostaDTO;
+import br.com.zupacademy.rafael.proposta.criarcartao.Cartao;
+import br.com.zupacademy.rafael.proposta.criarcartao.CartaoResponseDTO;
+import br.com.zupacademy.rafael.proposta.criarcartao.ServicoCriarCartao;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,10 +28,13 @@ import java.util.List;
 public class NovaPropostaController {
 
     @Autowired
+    private ServicoCriarCartao servicoCriarCartao;
+
+    @Autowired
     private PropostaRepository repository;
 
     @Autowired
-    private PropostaAnaliseClient propostaAnaliseClient;
+    private ServicoAnaliseProposta servicoAnaliseProposta;
 
     @PostMapping("/propostas")
     @Transactional
@@ -45,26 +51,32 @@ public class NovaPropostaController {
 
         repository.save(novaProposta);
 
-        AnalisePropostaRequest analisePropostaRequest = new AnalisePropostaRequest(novaProposta);
+        AnalisePropostaDTO analisePropostaDto = new AnalisePropostaDTO(novaProposta);
 
-        SolicitacaoResponse resultadoAnalise = null;
+        ResultadoAnalisePropostaDTO resultadoAnalisePropostaDto = null;
 
         try {
-            resultadoAnalise = propostaAnaliseClient.solicita(analisePropostaRequest);
-            novaProposta.setStatus(Status.ELEGIVEL);
+            resultadoAnalisePropostaDto = servicoAnaliseProposta.realiza(analisePropostaDto);
+            novaProposta.situacao(Status.ELEGIVEL);
+
+            CartaoResponseDTO cartaoResponseDTO = servicoCriarCartao.pegarDadosCartao(analisePropostaDto);
+            Cartao cartao = cartaoResponseDTO.toModel(novaProposta);
+            novaProposta.adquire(cartao);
 
             repository.save(novaProposta);
 
             URI enderecoProposta = uriBuilder.path("/propostas/{id}").build(novaProposta.getId());
 
             return ResponseEntity.status(HttpStatus.ACCEPTED)
-                    .header(HttpHeaders.LOCATION, enderecoProposta.toString()).body(resultadoAnalise);
+                    .header(HttpHeaders.LOCATION, enderecoProposta.toString()).body(resultadoAnalisePropostaDto);
 
         } catch (FeignException.UnprocessableEntity e) {
-            resultadoAnalise = new ObjectMapper().readValue(e.contentUTF8(), SolicitacaoResponse.class);
-            novaProposta.setStatus(Status.NAO_ELEGIVEL);
+            resultadoAnalisePropostaDto = new ObjectMapper().readValue(e.contentUTF8(), ResultadoAnalisePropostaDTO.class);
+
+            novaProposta.situacao(Status.NAO_ELEGIVEL);
+
             repository.save(novaProposta);
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(resultadoAnalise);
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(resultadoAnalisePropostaDto);
 
         } catch (FeignException e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Serviço indisponível");
