@@ -2,10 +2,7 @@ package br.com.zupacademy.rafael.proposta.novaproposta;
 
 import br.com.zupacademy.rafael.proposta.validacao.ValidarCPFeCNPJ;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
@@ -35,6 +32,9 @@ public class Proposta {
     @Positive
     private BigDecimal salario;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     @Deprecated
     public Proposta() {
     };
@@ -50,6 +50,18 @@ public class Proposta {
 
     public Long getId() {
         return id;
+    }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override
