@@ -1,7 +1,6 @@
 package br.com.zupacademy.rafael.proposta.novaproposta;
 
 import br.com.zupacademy.rafael.proposta.criarcartao.Cartao;
-import br.com.zupacademy.rafael.proposta.validacao.ValidarCPFeCNPJ;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -17,7 +16,6 @@ public class Proposta {
     private Long id;
 
     @NotBlank
-    @ValidarCPFeCNPJ
     String documento;
 
     @NotBlank
@@ -68,6 +66,10 @@ public class Proposta {
         this.status = status;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
     public void adquire(Cartao cartao) {
         this.cartao = cartao;
     }
@@ -75,7 +77,7 @@ public class Proposta {
     @Override
     public String toString() {
         return "Proposta [id=" + id + ", documento=" + documento + ", email=" + email + ", nome=" + nome + ", endereco="
-                + endereco + ", salario=" + salario + "]";
+                + endereco + ", salario=" + salario + ", status=" + status + ", cartao=" + cartao + "]";
     }
 
 }

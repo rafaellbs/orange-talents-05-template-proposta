@@ -3,8 +3,6 @@ package br.com.zupacademy.rafael.proposta.novaproposta;
 import br.com.zupacademy.rafael.proposta.analiseproposta.AnalisePropostaDTO;
 import br.com.zupacademy.rafael.proposta.analiseproposta.ServicoAnaliseProposta;
 import br.com.zupacademy.rafael.proposta.analiseproposta.ResultadoAnalisePropostaDTO;
-import br.com.zupacademy.rafael.proposta.criarcartao.Cartao;
-import br.com.zupacademy.rafael.proposta.criarcartao.CartaoResponseDTO;
 import br.com.zupacademy.rafael.proposta.criarcartao.ServicoCriarCartao;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -22,7 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class NovaPropostaController {
@@ -41,9 +39,9 @@ public class NovaPropostaController {
     public ResponseEntity<?> cadastrar(@RequestBody @Valid NovaPropostaRequest request,
                                        UriComponentsBuilder uriBuilder) throws JsonMappingException,
                                         JsonProcessingException {
-        List<Proposta> possivelProposta = repository.findByDocumento(request.getDocumento());
+        Optional<Proposta> possivelProposta = repository.findByDocumento(request.getDocumento());
 
-        if (possivelProposta.size() > 0) {
+        if (possivelProposta.isPresent()) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
         }
 
@@ -58,10 +56,6 @@ public class NovaPropostaController {
         try {
             resultadoAnalisePropostaDto = servicoAnaliseProposta.realiza(analisePropostaDto);
             novaProposta.situacao(Status.ELEGIVEL);
-
-            CartaoResponseDTO cartaoResponseDTO = servicoCriarCartao.pegarDadosCartao(analisePropostaDto);
-            Cartao cartao = cartaoResponseDTO.toModel(novaProposta);
-            novaProposta.adquire(cartao);
 
             repository.save(novaProposta);
 
