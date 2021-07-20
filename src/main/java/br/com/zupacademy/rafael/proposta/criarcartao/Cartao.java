@@ -1,11 +1,14 @@
 package br.com.zupacademy.rafael.proposta.criarcartao;
 
+import br.com.zupacademy.rafael.proposta.novabiometria.Biometria;
 import br.com.zupacademy.rafael.proposta.novaproposta.Proposta;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Cartao {
@@ -27,6 +30,9 @@ public class Cartao {
     @OneToOne
     private Proposta proposta;
 
+    @OneToMany(mappedBy = "cartao")
+    private List<Biometria> biometrias;
+
     @Deprecated
     public Cartao() {
     }
@@ -38,6 +44,7 @@ public class Cartao {
         this.titular = titular;
         this.limite = limite;
         this.proposta = proposta;
+        this.biometrias = new ArrayList<Biometria>();
     }
 
     public Long getId() {
@@ -58,6 +65,19 @@ public class Cartao {
 
     public Proposta getProposta() {
         return proposta;
+    }
+
+    public List<Biometria> getBiometrias() {
+        return biometrias;
+    }
+
+    public void inserirNova(Biometria biometria) {
+        this.biometrias.add(biometria);
+    }
+
+    @Override
+    public String toString() {
+        return "Cartao [id=" + id + ", numero=" + numero + ", titular=" + titular + ", limite=" + limite + "]";
     }
 
 }
