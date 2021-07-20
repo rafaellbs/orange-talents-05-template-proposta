@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @FeignClient(value = "analisedados", url = "${url.servico.analise}")
 public interface ServicoAnaliseProposta {
 
-    @RequestMapping(method = RequestMethod.POST, value = "/api/solicitacao")
+    @RequestMapping(method = RequestMethod.POST)
     String verificaStatus();
 
-    @RequestMapping(method = RequestMethod.POST, value = "/api/solicitacao", consumes = "application/json")
+    @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
     ResultadoAnalisePropostaDTO realiza(AnalisePropostaDTO request);
 }
