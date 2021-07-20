@@ -1,7 +1,7 @@
 package br.com.zupacademy.rafael.proposta.novabiometria;
 
 import br.com.zupacademy.rafael.proposta.criarcartao.Cartao;
-import br.com.zupacademy.rafael.proposta.validation.ValidadorBase64;
+import br.com.zupacademy.rafael.proposta.validacao.ValidadorBase64;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 import javax.validation.constraints.NotBlank;

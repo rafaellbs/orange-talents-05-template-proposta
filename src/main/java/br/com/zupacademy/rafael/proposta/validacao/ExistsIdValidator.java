@@ -1,4 +1,4 @@
-package br.com.zupacademy.rafael.proposta.validation;
+package br.com.zupacademy.rafael.proposta.validacao;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

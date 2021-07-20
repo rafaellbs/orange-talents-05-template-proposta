@@ -2,7 +2,7 @@ package br.com.zupacademy.rafael.proposta.analiseproposta;
 
 import br.com.zupacademy.rafael.proposta.novaproposta.Proposta;
 import br.com.zupacademy.rafael.proposta.validacao.ValidarCPFeCNPJ;
-import br.com.zupacademy.rafael.proposta.validation.ExistsId;
+import br.com.zupacademy.rafael.proposta.validacao.ExistsId;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

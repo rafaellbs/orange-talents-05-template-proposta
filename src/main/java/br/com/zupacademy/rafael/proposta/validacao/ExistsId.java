@@ -1,4 +1,4 @@
-package br.com.zupacademy.rafael.proposta.validation;
+package br.com.zupacademy.rafael.proposta.validacao;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
