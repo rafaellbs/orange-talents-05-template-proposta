@@ -8,6 +8,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,12 @@ import java.util.Optional;
 @RestController
 public class NovaPropostaController {
 
+    private Tracer tracer;
+
+    public NovaPropostaController(Tracer tracer) {
+        this.tracer = tracer;
+    }
+
     @Autowired
     private ServicoCriarCartao servicoCriarCartao;
 
@@ -39,6 +47,9 @@ public class NovaPropostaController {
     public ResponseEntity<?> cadastrar(@RequestBody @Valid NovaPropostaRequest request,
                                        UriComponentsBuilder uriBuilder) throws JsonMappingException,
                                         JsonProcessingException {
+
+        Span activeSpan = tracer.activeSpan();
+
         Optional<Proposta> possivelProposta = repository.findByDocumento(request.getDocumento());
 
         if (possivelProposta.isPresent()) {
@@ -48,6 +59,8 @@ public class NovaPropostaController {
         Proposta novaProposta = request.toModel();
 
         repository.save(novaProposta);
+
+        activeSpan.setBaggageItem("user.email", novaProposta.getEmail());
 
         AnalisePropostaDTO analisePropostaDto = new AnalisePropostaDTO(novaProposta);
 

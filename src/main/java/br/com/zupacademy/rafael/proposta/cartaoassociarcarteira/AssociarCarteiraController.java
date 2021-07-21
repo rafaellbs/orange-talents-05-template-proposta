@@ -2,6 +2,8 @@ package br.com.zupacademy.rafael.proposta.cartaoassociarcarteira;
 
 import br.com.zupacademy.rafael.proposta.criarcartao.Cartao;
 import br.com.zupacademy.rafael.proposta.criarcartao.CartaoRepository;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,12 @@ import java.net.URI;
 @RestController
 public class AssociarCarteiraController {
 
+    private final Tracer tracer;
+
+    public AssociarCarteiraController(Tracer tracer) {
+        this.tracer = tracer;
+    }
+
     @Autowired
     private ServicoAssociaCartaoACarteira servicoAssociaCartaoACarteira;
 
@@ -34,9 +42,12 @@ public class AssociarCarteiraController {
     public ResponseEntity<?> associarCarteira(@PathVariable String id, @RequestBody
     @Valid AssociarCarteiraForm form, UriComponentsBuilder uriBuilder) {
 
+        Span activeSpan = tracer.activeSpan();
+
         Cartao cartao = cartaoRepository.findByNumero(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cartão não encontrado."));
 
+        activeSpan.setTag("titular.cartao", cartao.getTitular());
 
         Carteira carteira = form.toModel(cartao);
 
@@ -48,6 +59,8 @@ public class AssociarCarteiraController {
             servicoAssociaCartaoACarteira.associar(cartao.getNumero(), form);
 
             manager.persist(carteira);
+
+            activeSpan.log("Carteira associada com " + form.getCarteira());
 
             URI uri = uriBuilder.path("/cartoes/{numero}/carteiras/{id}").build(id, carteira.getId());
 
