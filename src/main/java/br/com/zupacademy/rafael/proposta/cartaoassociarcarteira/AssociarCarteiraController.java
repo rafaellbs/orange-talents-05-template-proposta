@@ -45,7 +45,7 @@ public class AssociarCarteiraController {
         }
 
         try {
-            servicoAssociaCartaoACarteira.associar(id, form);
+            servicoAssociaCartaoACarteira.associar(cartao.getNumero(), form);
 
             manager.persist(carteira);
 
