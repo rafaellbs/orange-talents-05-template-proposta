@@ -4,6 +4,7 @@ import br.com.zupacademy.rafael.proposta.analiseproposta.AnalisePropostaDTO;
 import br.com.zupacademy.rafael.proposta.analiseproposta.ServicoAnaliseProposta;
 import br.com.zupacademy.rafael.proposta.analiseproposta.ResultadoAnalisePropostaDTO;
 import br.com.zupacademy.rafael.proposta.criarcartao.ServicoCriarCartao;
+import br.com.zupacademy.rafael.proposta.criptografia.CriptografarDados;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,13 +51,15 @@ public class NovaPropostaController {
 
         Span activeSpan = tracer.activeSpan();
 
-        Optional<Proposta> possivelProposta = repository.findByDocumento(request.getDocumento());
+        String documentoCriptografado = CriptografarDados.criptografaTexto(request.getDocumento());
+
+        Optional<Proposta> possivelProposta = repository.findByDocumento(documentoCriptografado);
 
         if (possivelProposta.isPresent()) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
         }
 
-        Proposta novaProposta = request.toModel();
+        Proposta novaProposta = request.toModel(documentoCriptografado);
 
         repository.save(novaProposta);
 

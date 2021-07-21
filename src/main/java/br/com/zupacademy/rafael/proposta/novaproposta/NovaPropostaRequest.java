@@ -47,7 +47,7 @@ public class NovaPropostaRequest {
                 + endereco + ", salario=" + salario + "]";
     }
 
-    public Proposta toModel() {
-        return new Proposta(documento, email, nome, endereco, salario);
+    public Proposta toModel(String documentoCriptografado) {
+        return new Proposta(documentoCriptografado, email, nome, endereco, salario);
     }
 }
