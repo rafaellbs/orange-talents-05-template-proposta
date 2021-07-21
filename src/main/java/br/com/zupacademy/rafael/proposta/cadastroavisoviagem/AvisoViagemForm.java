@@ -14,19 +14,27 @@ public class AvisoViagemForm {
 
     @Future
     @NotNull
-    private LocalDate dataTermino;
+    private LocalDate validoAte;
 
-    public AvisoViagemForm(@NotBlank String destino, @Future LocalDate dataTermino) {
+    public AvisoViagemForm(@NotBlank String destino, @NotNull @Future LocalDate validoAte) {
         this.destino = destino;
-        this.dataTermino = dataTermino;
+        this.validoAte = validoAte;
+    }
+
+    public String getDestino() {
+        return destino;
+    }
+
+    public LocalDate getValidoAte() {
+        return validoAte;
     }
 
     @Override
     public String toString() {
-        return "AvisoViagemForm [destino=" + destino + ", dataTermino=" + dataTermino + "]";
+        return "AvisoViagemForm [destino=" + destino + ", dataTermino=" + validoAte + "]";
     }
 
     public AvisoViagem toModel(Cartao cartao, String ipCliente, String userAgent) {
-        return new AvisoViagem(destino, dataTermino, ipCliente, userAgent, cartao);
+        return new AvisoViagem(destino, validoAte, ipCliente, userAgent, cartao);
     }
 }

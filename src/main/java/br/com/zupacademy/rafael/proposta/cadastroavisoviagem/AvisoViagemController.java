@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,25 +27,32 @@ public class AvisoViagemController {
     @Autowired
     private CartaoRepository cartaoRepository;
 
+    @Autowired
+    private ServicoNotificaSistemaAviso servicoNotificaSistemaAviso;
+
+    public AvisoViagemController() {
+    }
+
     @PostMapping("/cartoes/{id}/avisos/viagens")
     @Transactional
     public ResponseEntity<?> avisoViagem(@PathVariable String id, @RequestBody @Valid AvisoViagemForm form,
                                          HttpServletRequest request) {
 
-        Optional<Cartao> possivelCartao = cartaoRepository.findByNumero(id);
-
-        if (possivelCartao.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        Cartao cartao = cartaoRepository.findByNumero(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cartão não encontrado."));
 
         String ipCliente = request.getRemoteAddr();
         String userAgent = request.getHeader("User-Agent");
 
-        AvisoViagem avisoViagem = form.toModel(possivelCartao.get(), ipCliente, userAgent);
+        AvisoViagem avisoViagem = form.toModel(cartao, ipCliente, userAgent);
+        try {
+            servicoNotificaSistemaAviso.notificar(cartao.getNumero(), form);
+            manager.persist(avisoViagem);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
+        }
 
-        manager.persist(avisoViagem);
-
-        return ResponseEntity.ok().body(avisoViagem.toString());
+        return ResponseEntity.ok().build();
     }
 }
 

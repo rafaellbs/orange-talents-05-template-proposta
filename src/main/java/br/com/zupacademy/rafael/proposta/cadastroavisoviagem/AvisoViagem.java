@@ -19,7 +19,7 @@ public class AvisoViagem {
     private String destino;
 
     @NotNull
-    private LocalDate dataTermino;
+    private LocalDate validoAte;
 
     @NotBlank
     private String ipCliente;
@@ -37,10 +37,10 @@ public class AvisoViagem {
     public AvisoViagem() {
     }
 
-    public AvisoViagem(@NotBlank String destino, @NotNull LocalDate dataTermino, @NotBlank String ipCliente,
+    public AvisoViagem(@NotBlank String destino, @NotNull LocalDate validoAte, @NotBlank String ipCliente,
                        @NotBlank String userAgent, @NotNull Cartao cartao) {
         this.destino = destino;
-        this.dataTermino = dataTermino;
+        this.validoAte = validoAte;
         this.ipCliente = ipCliente;
         this.userAgent = userAgent;
         this.cartao = cartao;
@@ -49,7 +49,7 @@ public class AvisoViagem {
 
     @Override
     public String toString() {
-        return "AvisoViagem [id=" + id + ", destino=" + destino + ", dataTermino=" + dataTermino + ", ipCliente="
+        return "AvisoViagem [id=" + id + ", destino=" + destino + ", validoAte=" + validoAte + ", ipCliente="
                 + ipCliente + ", userAgent=" + userAgent + ", cartao=" + cartao + ", instante=" + instante + "]";
     }
 
