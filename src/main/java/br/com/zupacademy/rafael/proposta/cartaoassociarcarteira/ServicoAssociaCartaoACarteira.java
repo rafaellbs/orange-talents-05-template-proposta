@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
 
-@FeignClient(value = "api-associa-cartao-em-carteira", url = "http://localhost:8888")
+@FeignClient(value = "api-associa-cartao-em-carteira", url = "${servico.cartoes}")
 public interface ServicoAssociaCartaoACarteira {
 
-    @RequestMapping(method = RequestMethod.POST, value = "/api/cartoes/{id}/carteiras", consumes = "application/json", produces = "application/json")
+    @RequestMapping(method = RequestMethod.POST, value = "/{id}/carteiras", consumes = "application/json", produces = "application/json")
     public String associar(@PathVariable(value = "id") String id, @RequestBody @Valid AssociarCarteiraForm form);
 }
