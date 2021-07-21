@@ -1,5 +1,6 @@
 package br.com.zupacademy.rafael.proposta.criarcartao;
 
+import br.com.zupacademy.rafael.proposta.cartaoassociarcarteira.Carteira;
 import br.com.zupacademy.rafael.proposta.novabiometria.Biometria;
 import br.com.zupacademy.rafael.proposta.novaproposta.Proposta;
 
@@ -36,6 +37,9 @@ public class Cartao {
     @Enumerated(EnumType.STRING)
     private StatusCartao status;
 
+    @OneToMany(mappedBy = "cartao")
+    private List<Carteira> carteiras;
+
     @Deprecated
     public Cartao() {
     }
@@ -49,6 +53,7 @@ public class Cartao {
         this.proposta = proposta;
         this.biometrias = new ArrayList<Biometria>();
         this.status = StatusCartao.NAO_BLOQUEADO;
+        this.carteiras = new ArrayList<Carteira>();
     }
 
     public Long getId() {
@@ -89,6 +94,10 @@ public class Cartao {
 
     public void bloquear() {
         this.status = StatusCartao.BLOQUEADO;
+    }
+
+    public boolean ehAssociado(Carteira carteira) {
+        return carteiras.contains(carteira);
     }
 
     @Override
